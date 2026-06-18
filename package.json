@@ -1,0 +1,40 @@
+{
+  "name": "expense-tracker-express",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/mochfauzanakr/expense-tracker-be-express#readme",
+  "bugs": {
+    "url": "https://github.com/mochfauzanakr/expense-tracker-be-express/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mochfauzanakr/expense-tracker-be-express.git"
+  },
+  "license": "ISC",
+  "author": "fauzan",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.1.0",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "drizzle-orm": "^0.45.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
+    "helmet": "^8.2.0",
+    "morgan": "^1.11.0",
+    "pg": "^8.21.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.9.3",
+    "drizzle-kit": "^0.31.10",
+    "nodemon": "^3.1.14",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
+  }
+}
