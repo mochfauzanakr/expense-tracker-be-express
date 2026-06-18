@@ -18,6 +18,10 @@ app.use(rateLimiter);
 
 app.use("/api", routes);
 
+app.get("/", (req, res) => {
+  res.json({ message: "Expense Tracker API is running" });
+});
+
 app.use(notFound);
 app.use(errorHandler);
 
