@@ -19,7 +19,12 @@ export const getBudget = catchAsync(async (req, res) => {
 export const createBudget = catchAsync(async (req, res) => {
   const { categoryId, amount, month } = req.body;
   const [data] = await db.insert(budgets)
-    .values({ userId: req.user.id, categoryId, amount, month })
+    .values({ 
+      userId: req.user.id, 
+      categoryId, 
+      amount, 
+      month: new Date(month) 
+    })
     .returning();
   res.status(201).json({ data });
 });
@@ -27,7 +32,11 @@ export const createBudget = catchAsync(async (req, res) => {
 export const updateBudget = catchAsync(async (req, res) => {
   const { categoryId, amount, month } = req.body;
   const [data] = await db.update(budgets)
-    .set({ categoryId, amount, month })
+    .set({ 
+      categoryId, 
+      amount, 
+      month: new Date(month) 
+    })
     .where(and(eq(budgets.id, req.params.id), eq(budgets.userId, req.user.id)))
     .returning();
   if (!data) throw new AppError('Budget not found', 404);
