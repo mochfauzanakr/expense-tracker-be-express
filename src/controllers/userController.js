@@ -2,6 +2,8 @@ import { db } from '../db/index.js';
 import { users } from '../db/schema.js';
 import { eq } from 'drizzle-orm';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import env from '../config/env.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/AppError.js';
 
@@ -14,6 +16,37 @@ export const register = catchAsync(async (req, res) => {
   const passwordHash = await bcrypt.hash(password, 10);
   const [data] = await db.insert(users).values({ name, email, passwordHash }).returning();
   res.status(201).json({ message: 'User registered successfully', data });
+});
+
+export const login = catchAsync(async (req, res) => {
+  const { email, password } = req.body;
+
+  const [user] = await db.select().from(users).where(eq(users.email, email));
+  if (!user || !user.isActive) throw new AppError('Invalid email or password', 401);
+
+  const isMatch = await bcrypt.compare(password, user.passwordHash);
+  if (!isMatch) throw new AppError('Invalid email or password', 401);
+
+  const token = jwt.sign({ id: user.id, name: user.name, email: user.email }, env.JWT_SECRET, {
+    expiresIn: '7d',
+  });
+
+  res.cookie('token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'none',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
+
+  res.json({
+    message: 'Logged in successfully',
+    token,
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    },
+  });
 });
 
 export const getUser = catchAsync(async (req, res) => {
