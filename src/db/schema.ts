@@ -24,7 +24,9 @@ export const accounts = pgTable('accounts', {
 
 export const categories = pgTable('categories', {
   id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
   name: text('name').notNull(), 
+  icon: text('icon'),
   createdAt: timestamp('created_at').defaultNow(),
 });
 
