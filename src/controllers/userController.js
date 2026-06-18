@@ -1,5 +1,5 @@
 import { db } from '../db/index.js';
-import { users } from '../db/schema.js';
+import { users, accounts, categories } from '../db/schema.js';
 import { eq } from 'drizzle-orm';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -15,6 +15,32 @@ export const register = catchAsync(async (req, res) => {
 
   const passwordHash = await bcrypt.hash(password, 10);
   const [data] = await db.insert(users).values({ name, email, passwordHash }).returning();
+
+  // Auto-create default Cash account for new user
+  await db.insert(accounts).values({
+    userId: data.id,
+    name: 'Cash',
+    balance: '0',
+  });
+
+  // Auto-create default categories for new user
+  const defaultCategories = [
+    { name: 'Makanan & Minuman', icon: 'coffee' },
+    { name: 'Belanja', icon: 'shopping-bag' },
+    { name: 'Transportasi', icon: 'car' },
+    { name: 'Tagihan & Utilitas', icon: 'credit-card' },
+    { name: 'Investasi & Tabungan', icon: 'landmark' },
+    { name: 'Lainnya', icon: 'more-horizontal' },
+  ];
+
+  await db.insert(categories).values(
+    defaultCategories.map(cat => ({
+      userId: data.id,
+      name: cat.name,
+      icon: cat.icon,
+    }))
+  );
+
   res.status(201).json({ message: 'User registered successfully', data });
 });
 

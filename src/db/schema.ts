@@ -26,7 +26,7 @@ export const categories = pgTable('categories', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
   name: text('name').notNull(), 
-  icon: text('icon'),
+  icon: text('icon').default('dollar-sign').notNull(),
   createdAt: timestamp('created_at').defaultNow(),
 });
 

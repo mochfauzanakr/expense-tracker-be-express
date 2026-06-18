@@ -93,6 +93,7 @@ export const getFilteredTransactions = catchAsync(async (req, res) => {
     accountId: transactions.accountId,
     categoryId: transactions.categoryId,
     categoryName: categories.name,
+    categoryIcon: categories.icon,
     amount: transactions.amount,
     type: transactions.type,
     description: transactions.description,

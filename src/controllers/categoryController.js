@@ -1,11 +1,16 @@
 import { db } from '../db/index.js';
 import { categories } from '../db/schema.js';
-import { eq } from 'drizzle-orm';
+import { eq, or, isNull } from 'drizzle-orm';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/AppError.js';
 
 export const getCategories = catchAsync(async (req, res) => {
-  const data = await db.select().from(categories);
+  const data = await db.select().from(categories).where(
+    or(
+      eq(categories.userId, req.user.id),
+      isNull(categories.userId)
+    )
+  );
   res.json({ data });
 });
 
@@ -16,8 +21,12 @@ export const getCategory = catchAsync(async (req, res) => {
 });
 
 export const createCategory = catchAsync(async (req, res) => {
-  const { name } = req.body;
-  const [data] = await db.insert(categories).values({ name }).returning();
+  const { name, icon } = req.body;
+  const [data] = await db.insert(categories).values({ 
+    userId: req.user.id, 
+    name, 
+    icon: icon || 'dollar-sign'
+  }).returning();
   res.status(201).json({ data });
 });
 
