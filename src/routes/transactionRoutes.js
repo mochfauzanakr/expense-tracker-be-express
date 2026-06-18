@@ -1,5 +1,13 @@
 import { Router } from 'express';
-import { getTransactions, getTransaction, createTransaction, updateTransaction, deleteTransaction } from '../controllers/transactionController.js';
+import { 
+  getTransactions, 
+  getTransaction, 
+  createTransaction, 
+  updateTransaction, 
+  deleteTransaction,
+  getHighestExpenses,
+  getFilteredTransactions
+} from '../controllers/transactionController.js';
 import { authenticateToken } from '../middlewares/auth.js';
 import { validateBody } from '../middlewares/validate.js';
 import { transactionSchema } from '../utils/schemas.js';
@@ -9,6 +17,8 @@ const router = Router();
 router.use(authenticateToken);
 
 router.get('/', getTransactions);
+router.get('/highest', getHighestExpenses);
+router.get('/filter', getFilteredTransactions);
 router.get('/:id', getTransaction);
 router.post('/', validateBody(transactionSchema), createTransaction);
 router.put('/:id', validateBody(transactionSchema), updateTransaction);
