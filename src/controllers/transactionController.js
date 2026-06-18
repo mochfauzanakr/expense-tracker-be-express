@@ -18,16 +18,18 @@ export const getTransaction = catchAsync(async (req, res) => {
 
 export const createTransaction = catchAsync(async (req, res) => {
   const { accountId, categoryId, amount, type, description } = req.body;
+  const targetCategoryId = (categoryId && categoryId !== 'none') ? categoryId : null;
   const [data] = await db.insert(transactions)
-    .values({ userId: req.user.id, accountId, categoryId, amount, type, description })
+    .values({ userId: req.user.id, accountId, categoryId: targetCategoryId, amount, type, description })
     .returning();
   res.status(201).json({ data });
 });
 
 export const updateTransaction = catchAsync(async (req, res) => {
   const { accountId, categoryId, amount, type, description } = req.body;
+  const targetCategoryId = (categoryId && categoryId !== 'none') ? categoryId : null;
   const [data] = await db.update(transactions)
-    .set({ accountId, categoryId, amount, type, description })
+    .set({ accountId, categoryId: targetCategoryId, amount, type, description })
     .where(and(eq(transactions.id, req.params.id), eq(transactions.userId, req.user.id)))
     .returning();
   if (!data) throw new AppError('Transaction not found', 404);

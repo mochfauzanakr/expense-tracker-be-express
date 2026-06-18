@@ -33,10 +33,18 @@ export const budgetSchema = z.object({
 
 export const transactionSchema = z.object({
   accountId: z.string().uuid('Invalid account ID'),
-  categoryId: z.string().uuid('Invalid category ID'),
+  categoryId: z.string().uuid('Invalid category ID').nullable().optional(),
   amount: z.union([z.string(), z.number()]),
   type: z.enum(['income', 'expense']),
   description: z.string().min(1, 'Description is required'),
+}).superRefine((data, ctx) => {
+  if (data.type === 'expense' && !data.categoryId) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Category is required for expenses',
+      path: ['categoryId'],
+    });
+  }
 });
 
 export const savingsGoalSchema = z.object({
