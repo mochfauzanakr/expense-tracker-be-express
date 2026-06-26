@@ -52,4 +52,6 @@ export const savingsGoalSchema = z.object({
   targetAmount: z.union([z.string(), z.number()]),
   currentAmount: z.union([z.string(), z.number()]).optional(),
   deadline: z.string().datetime().or(z.string().date()).optional(),
+  accountId: z.string().uuid('Invalid account ID').optional(),
+  categoryId: z.string().uuid('Invalid category ID').optional(),
 });
