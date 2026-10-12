@@ -1,6 +1,14 @@
+import { ErrorRequestHandler } from "express";
 import env from "../config/env.js";
 
-const errorHandler = (err, req, res, next) => {
+interface ErrorResponse {
+  status: string;
+  message: string;
+  stack?: string;
+  error?: any;
+}
+
+const errorHandler: ErrorRequestHandler = (err, req, res, next): void => {
   let statusCode = err.statusCode || 500;
   let status = err.status || "error";
   let message = err.message || "Internal Server Error";
@@ -22,7 +30,7 @@ const errorHandler = (err, req, res, next) => {
     message = "Invalid reference key. The related record does not exist.";
   }
   // Handle connection failures
-  else if (err.code && err.code.startsWith("08")) {
+  else if (err.code && typeof err.code === "string" && err.code.startsWith("08")) {
     statusCode = 503;
     message = "Database connection error. Please try again later.";
   }
@@ -31,7 +39,7 @@ const errorHandler = (err, req, res, next) => {
     message = "An unexpected error occurred. Please try again.";
   }
 
-  const response = {
+  const response: ErrorResponse = {
     status,
     message,
   };

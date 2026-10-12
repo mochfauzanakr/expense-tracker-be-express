@@ -1,8 +1,15 @@
+import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import AppError from '../utils/AppError.js';
 import env from '../config/env.js';
 
-export function authenticateToken(req, res, next) {
+interface JwtPayload {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export function authenticateToken(req: Request, res: Response, next: NextFunction): void {
   let token = req.cookies?.token;
   
   if (!token && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
@@ -13,12 +20,12 @@ export function authenticateToken(req, res, next) {
     return next(new AppError('Token missing', 401));
   }
 
-  jwt.verify(token, env.JWT_SECRET, (err, decoded) => {
-    if (err) {
+  jwt.verify(token, env.JWT_SECRET, (err: jwt.VerifyErrors | null, decoded: any) => {
+    if (err || !decoded) {
       return next(new AppError('Invalid or expired token', 403));
     }
 
-    req.user = decoded;
+    req.user = decoded as JwtPayload;
     next();
   });
 }
