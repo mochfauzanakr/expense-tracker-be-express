@@ -9,8 +9,8 @@ import {
   getFilteredTransactions
 } from '../controllers/transactionController.js';
 import { authenticateToken } from '../middlewares/auth.js';
-import { validateBody } from '../middlewares/validate.js';
-import { transactionSchema } from '../utils/schemas.js';
+import { validateBody, validateQuery } from '../middlewares/validate.js';
+import { transactionSchema, transactionFilterQuerySchema } from '../utils/schemas.js';
 
 const router = Router();
 
@@ -18,7 +18,7 @@ router.use(authenticateToken);
 
 router.get('/', getTransactions);
 router.get('/highest', getHighestExpenses);
-router.get('/filter', getFilteredTransactions);
+router.get('/filter', validateQuery(transactionFilterQuerySchema), getFilteredTransactions);
 router.get('/:id', getTransaction);
 router.post('/', validateBody(transactionSchema), createTransaction);
 router.put('/:id', validateBody(transactionSchema), updateTransaction);

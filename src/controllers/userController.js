@@ -14,32 +14,37 @@ export const register = catchAsync(async (req, res) => {
   if (existingUser) throw new AppError('User already exists', 400);
 
   const passwordHash = await bcrypt.hash(password, 10);
-  const [data] = await db.insert(users).values({ name, email, passwordHash }).returning();
 
-  // Auto-create default Cash account for new user
-  await db.insert(accounts).values({
-    userId: data.id,
-    name: 'Cash',
-    balance: '0',
+  const data = await db.transaction(async (tx) => {
+    const [newUser] = await tx.insert(users).values({ name, email, passwordHash }).returning();
+
+    // Auto-create default Cash account for new user
+    await tx.insert(accounts).values({
+      userId: newUser.id,
+      name: 'Cash',
+      balance: '0',
+    });
+
+    // Auto-create default categories for new user
+    const defaultCategories = [
+      { name: 'Makanan & Minuman', icon: 'coffee' },
+      { name: 'Belanja', icon: 'shopping-bag' },
+      { name: 'Transportasi', icon: 'car' },
+      { name: 'Tagihan & Utilitas', icon: 'credit-card' },
+      { name: 'Investasi & Tabungan', icon: 'landmark' },
+      { name: 'Lainnya', icon: 'more-horizontal' },
+    ];
+
+    await tx.insert(categories).values(
+      defaultCategories.map(cat => ({
+        userId: newUser.id,
+        name: cat.name,
+        icon: cat.icon,
+      }))
+    );
+
+    return newUser;
   });
-
-  // Auto-create default categories for new user
-  const defaultCategories = [
-    { name: 'Makanan & Minuman', icon: 'coffee' },
-    { name: 'Belanja', icon: 'shopping-bag' },
-    { name: 'Transportasi', icon: 'car' },
-    { name: 'Tagihan & Utilitas', icon: 'credit-card' },
-    { name: 'Investasi & Tabungan', icon: 'landmark' },
-    { name: 'Lainnya', icon: 'more-horizontal' },
-  ];
-
-  await db.insert(categories).values(
-    defaultCategories.map(cat => ({
-      userId: data.id,
-      name: cat.name,
-      icon: cat.icon,
-    }))
-  );
 
   res.status(201).json({ message: 'User registered successfully', data });
 });
