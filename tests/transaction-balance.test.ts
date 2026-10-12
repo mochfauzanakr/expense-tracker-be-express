@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { PGlite } from '@electric-sql/pglite';
 import { drizzle } from 'drizzle-orm/pglite';
 import { eq, and, sql } from 'drizzle-orm';
-import * as schema from '../src/db/schema.ts';
+import * as schema from '../src/db/schema.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
