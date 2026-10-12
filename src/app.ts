@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
@@ -8,7 +8,7 @@ import rateLimiter from "./middlewares/rateLimiter.js";
 import notFound from "./middlewares/notFound.js";
 import errorHandler from "./middlewares/errorHandler.js";
 
-const app = express();
+const app: Express = express();
 
 app.set('trust proxy', 1);
 
@@ -22,7 +22,7 @@ app.use(rateLimiter);
 
 app.use("/api", routes);
 
-app.get("/", (req, res) => {
+app.get("/", (_req: Request, res: Response) => {
   res.json({ message: "Expense Tracker API is running" });
 });
 
