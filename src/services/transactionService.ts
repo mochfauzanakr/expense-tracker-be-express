@@ -245,7 +245,7 @@ export async function getHighestExpenses(userId: string) {
 export async function getFilteredTransactions(userId: string, filters: TransactionFilterDTO) {
   const conditions = [eq(transactions.userId, userId)];
 
-  if (filters.category) {
+  if (filters.category && filters.category.trim() !== '') {
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(filters.category);
     if (isUuid) {
       conditions.push(eq(transactions.categoryId, filters.category));
@@ -254,17 +254,17 @@ export async function getFilteredTransactions(userId: string, filters: Transacti
     }
   }
 
-  if (filters.type) {
+  if (filters.type && filters.type.trim() !== '') {
     conditions.push(eq(transactions.type, filters.type));
   }
 
-  if (filters.year) {
+  if (filters.year && filters.year.trim() !== '') {
     conditions.push(sql`EXTRACT(YEAR FROM ${transactions.createdAt}) = ${parseInt(filters.year)}`);
   }
-  if (filters.month) {
+  if (filters.month && filters.month.trim() !== '') {
     conditions.push(sql`EXTRACT(MONTH FROM ${transactions.createdAt}) = ${parseInt(filters.month)}`);
   }
-  if (filters.day) {
+  if (filters.day && filters.day.trim() !== '') {
     conditions.push(sql`EXTRACT(DAY FROM ${transactions.createdAt}) = ${parseInt(filters.day)}`);
   }
 

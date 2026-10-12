@@ -22,6 +22,11 @@ export const validateQuery = (schema: ZodSchema): RequestHandler => (req: Reques
       .join(', ');
     return next(new AppError(errorMsg, 400));
   }
-  req.query = result.data as any;
+  Object.defineProperty(req, 'query', {
+    value: result.data,
+    writable: true,
+    configurable: true,
+    enumerable: true,
+  });
   next();
 };

@@ -80,8 +80,8 @@ export const savingsGoalSchema = z.object({
 
 export const transactionFilterQuerySchema = z.object({
   category: z.string().optional(),
-  type: z.enum(['income', 'expense']).optional(),
-  year: z.string().regex(/^\d{4}$/, 'Year must be a 4-digit number').optional(),
-  month: z.string().regex(/^(0?[1-9]|1[0-2])$/, 'Month must be between 1 and 12').optional(),
-  day: z.string().regex(/^(0?[1-9]|[12]\d|3[01])$/, 'Day must be between 1 and 31').optional(),
-});
+  type: z.union([z.enum(['income', 'expense']), z.literal('')]).optional(),
+  year: z.union([z.string().regex(/^\d{4}$/, 'Year must be a 4-digit number'), z.literal('')]).optional(),
+  month: z.union([z.string().regex(/^(0?[1-9]|1[0-2])$/, 'Month must be between 1 and 12'), z.literal('')]).optional(),
+  day: z.union([z.string().regex(/^(0?[1-9]|[12]\d|3[01])$/, 'Day must be between 1 and 31'), z.literal('')]).optional(),
+}).passthrough();

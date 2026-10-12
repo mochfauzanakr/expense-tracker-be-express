@@ -36,6 +36,7 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next): void => {
   }
   // Generic fallback mask in production for unexpected errors
   else if (!err.statusCode && env.NODE_ENV === "production") {
+    console.error("[Unhandled Error]:", err);
     message = "An unexpected error occurred. Please try again.";
   }
 

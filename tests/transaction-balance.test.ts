@@ -177,5 +177,23 @@ test('Skenario Testing: Mutasi Saldo & Proteksi Overdraft (In-Memory PGlite)', a
     assert.equal(errorCaught, true, 'User 2 tidak boleh bisa mengakses akun User 1');
   });
 
+  await t.test('6. FILTER TRANSAKSI: validateQuery dengan Object.defineProperty tidak throw getter error', async () => {
+    const { validateQuery } = await import('../src/middlewares/validate.js');
+    const { transactionFilterQuerySchema } = await import('../src/utils/schemas.js');
+
+    const fakeReq: any = { query: { type: 'expense', month: '10' } };
+    const fakeRes: any = {};
+    let nextCalled = false;
+
+    const middleware = validateQuery(transactionFilterQuerySchema);
+    middleware(fakeReq, fakeRes, () => {
+      nextCalled = true;
+    });
+
+    assert.equal(nextCalled, true, 'Middleware validateQuery harus memanggil next()');
+    assert.equal(fakeReq.query.type, 'expense');
+    assert.equal(fakeReq.query.month, '10');
+  });
+
   await pglite.close();
 });
