@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
+import cookieParser from "cookie-parser";
 import routes from "./routes/index.js";
 import rateLimiter from "./middlewares/rateLimiter.js";
 import notFound from "./middlewares/notFound.js";
@@ -14,6 +15,7 @@ app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(rateLimiter);
 
 app.use("/api", routes);

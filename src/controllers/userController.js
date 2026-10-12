@@ -76,6 +76,7 @@ export const login = catchAsync(async (req, res) => {
 });
 
 export const getUser = catchAsync(async (req, res) => {
+  if (req.user.id !== req.params.id) throw new AppError('Forbidden', 403);
   const [data] = await db.select({
     id: users.id,
     name: users.name,
@@ -88,6 +89,7 @@ export const getUser = catchAsync(async (req, res) => {
 });
 
 export const updateUser = catchAsync(async (req, res) => {
+  if (req.user.id !== req.params.id) throw new AppError('Forbidden', 403);
   const { name, email } = req.body;
   const [data] = await db.update(users)
     .set({ name, email })
@@ -98,6 +100,7 @@ export const updateUser = catchAsync(async (req, res) => {
 });
 
 export const deleteUser = catchAsync(async (req, res) => {
+  if (req.user.id !== req.params.id) throw new AppError('Forbidden', 403);
   // ponytail: soft-delete via isActive flag; hard delete on demand
   const [data] = await db.update(users)
     .set({ isActive: false, deletedAt: new Date() })
